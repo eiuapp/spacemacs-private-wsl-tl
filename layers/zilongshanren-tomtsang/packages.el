@@ -27,6 +27,9 @@
     (org :location built-in)
     ox-hugo
     py-autopep8
+    pyim-wbdict
+    pyim-basedict
+    pyim
     ;; vmd-mode
     ;; (ox-hugo :location (recipe :fetcher github :repo "kaushalmodi/ox-hugo"))
     ;; (zilongshanren-org :location built-in)
@@ -39,6 +42,108 @@
     ;; org-download
     ;; plain-org-wiki
     ))
+
+
+(defun zilongshanren-tomtsang/init-pyim-wbdict ()
+    (use-package pyim-wbdict
+      :ensure nil
+      ;:config (pyim-wbdict-gbk-enable))
+      :config (pyim-wbdict-v98-enable))
+    :init)
+
+(defun zilongshanren-tomtsang/init-pyim()
+  "Initialize pyim"
+  (use-package pyim
+    :ensure nil
+    :demand t
+    :init
+    (setq pyim-punctuation-translate-p '(no yes auto))
+    :config
+    (setq default-input-method "pyim")
+    (setq pyim-default-scheme 'wubi)
+
+    ;; 让 Emacs 启动时自动加载 pyim 词库
+    (add-hook 'emacs-startup-hook
+              #'(lambda () (pyim-restart-1 t)))
+
+    (setq pyim-page-tooltip 'posframe)
+    (setq pyim-dicts '((:name "基础词库" :file "~/.spacemacs.d/utils/wbdict.pyim")))
+    (global-set-key (kbd "C-9") 'toggle-input-method)
+    ))
+
+;; (defun zilongshanren-tomtsang/init-pyim ()
+;;   (use-package pyim
+;;     :ensure
+;;     ;; :ensure nil
+;;     :config
+;; ;    ;; 激活 basedict 拼音词库
+;;     (use-package pyim-basedict
+;;       :ensure nil
+;;       :config (pyim-basedict-enable))
+
+;;     ;; 五笔用户使用 wbdict 词库
+;;     (use-package pyim-wbdict
+;;       :ensure nil
+;;       :config (pyim-wbdict-gbk-enable))
+
+;;    (setq default-input-method "pyim")
+
+;; ;    ;; 我使用全拼
+;;    (setq pyim-default-scheme 'quanpin)
+;;     ;; (setq pyim-default-scheme 'wubi)
+
+;;     ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+;;     ;; 我自己使用的中英文动态切换规则是：
+;;     ;; 1. 光标只有在注释里面时，才可以输入中文。
+;;     ;; 2. 光标前是汉字字符时，才能输入中文。
+;;     ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
+;;     (setq-default pyim-english-input-switch-functions
+;;                   '(pyim-probe-dynamic-english
+;;                     pyim-probe-isearch-mode
+;;                     pyim-probe-program-mode
+;;                     pyim-probe-org-structure-template))
+
+;;     (setq-default pyim-punctuation-half-width-functions
+;;                   '(pyim-probe-punctuation-line-beginning
+;;                     pyim-probe-punctuation-after-punctuation))
+
+;;     ;; 开启拼音搜索功能
+;;     (pyim-isearch-mode 1)
+
+;;     ;; 使用 pupup-el 来绘制选词框
+;;     (setq pyim-page-tooltip 'popup)
+
+;;     ;; 选词框显示5个候选词
+;;     (setq pyim-page-length 5)
+
+;;     ;; 让 Emacs 启动时自动加载 pyim 词库
+;;     (add-hook 'emacs-startup-hook
+;;               #'(lambda () (pyim-restart-1 t)))
+;; ;    :bind
+;; ;    (("M-j" . pyim-convert-code-at-point) ;;与 pyim-probe-dynamic-english 配合
+;; ;     ("C-;" . pyim-delete-word-from-personal-buffer)))
+
+
+;; ;让选词框跟随光标
+;; ;用户可以通过下面的设置让 pyim 在光标处显示一个选词框：
+;; ;
+;; ;使用 popup 包来绘制选词框 （emacs overlay 机制）
+;; ;(setq pyim-page-tooltip 'popup)
+;; ;使用 pos-tip 包来绘制选词框（emacs tooltip 机制）
+;; ;(setq pyim-page-tooltip 'pos-tip)
+;; ;注：Linux 平台下，emacs 可以使用 GTK 来绘制选词框：
+;; ;
+;; ;(setq pyim-page-tooltip 'pos-tip)
+;; ;(setq x-gtk-use-system-tooltips t)
+
+
+;; ;调整 tooltip 选词框的显示样式
+;; ;pyim 的 tooltip 选词框默认使用双行显示的样式，在一些特殊的情况下（比如：popup 显示的菜单错位），用户可以使用单行显示 的样式：
+;; ;
+;; ;(setq pyim-page-style 'one-line)
+;;     ;; (global-set-key (kbd "C-\\") 'toggle-input-method)
+;;     ;; (global-set-key (kbd "M-C-\\") 'my-cycle-input-method)
+;;     :init))
 
 (defun zilongshanren-tomtsang/init-ein ()
   (use-package ein
