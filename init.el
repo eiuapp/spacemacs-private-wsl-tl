@@ -75,10 +75,12 @@ values."
      ;; ruby-on-rails
      lua
      html
-     (javascript :variables javascript-backend 'nil)
+     (javascript :variables
+                 node-add-modules-path t
+                 javascript-backend 'nil)
      (typescript :variables
-                typescript-fmt-on-save nil
-                typescript-fmt-tool 'typescript-formatter)
+                 typescript-fmt-on-save nil
+                 typescript-fmt-tool 'typescript-formatter)
      emacs-lisp
      (clojure :variables clojure-enable-fancify-symbols t)
      racket
@@ -97,11 +99,14 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(sicp)
+   dotspacemacs-additional-packages '(sicp
+                                      company-tern
+                                      prettier-js
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages
-   '(magit-gh-pulls magit-gitflow  evil-mc realgud tern company-tern
+   '(magit-gh-pulls magit-gitflow  evil-mc realgud tern
                     evil-args evil-ediff evil-exchange evil-unimpaired
                     evil-indent-plus volatile-highlights smartparens
                     spaceline holy-mode skewer-mode rainbow-delimiters
@@ -109,7 +114,7 @@ values."
                     org-bullets smooth-scrolling org-repo-todo org-download org-timer
                     livid-mode git-gutter git-gutter-fringe  evil-escape
                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
-                    ac-ispell ace-jump-mode auto-complete auto-dictionary
+                    ac-ispell ace-jump-mode auto-dictionary
                     clang-format define-word google-translate disaster epic
                     fancy-battery org-present orgit orglue spacemacs-theme
                     helm-flyspell flyspell-correct-helm clean-aindent-mode
@@ -117,7 +122,7 @@ values."
                     helm-themes helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp
                     window-purpose ivy-purpose helm-purpose spacemacs-purpose-popwin
-		    clojure-cheatsheet
+		            clojure-cheatsheet
                     )
    dotspacemacs-install-packages 'used-only
    dotspacemacs-delete-orphan-packages t))
@@ -365,6 +370,20 @@ values."
   )
 
 (defun dotspacemacs/user-config ()
+  ;; (require 'company-tern)
+  ;; (require 'company-mode)
+  ;; (add-to-list 'company-backends 'company-tern)
+
+  (require 'auto-complete)
+  (global-auto-complete-mode t)
+  ;; (add-to-list 'ac-modes (js2-mode company-mode tern-mode))
+  (add-to-list 'load-path "~/emacs/tern/emacs/")
+  (autoload 'tern-mode "tern.el" nil t)
+  (add-hook 'js-mode-hook (lambda () (tern-mode t)))
+  (eval-after-load 'tern
+    '(progn
+       (require 'tern-auto-complete)
+       (tern-ac-setup)))
   ;;解决org表格里面中英文对齐的问题
   (when (configuration-layer/layer-usedp 'chinese)
     (when (and (spacemacs/system-is-mac) window-system)

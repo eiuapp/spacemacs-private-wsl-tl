@@ -39,6 +39,7 @@
         (emacs-lisp :location built-in)
         ;; clojure-mode
         company
+        company-tern
         (eldoc :location built-in)
         dumb-jump
         graphviz-dot-mode
@@ -47,6 +48,26 @@
         robe
         exec-path-from-shell
         ))
+
+(defun zilongshanren-programming/init-company-tern ()
+  (use-package company-tern
+    :ensure t
+    :init
+    :config
+    (with-eval-after-load 'company 'tern
+                          '(add-to-list 'company-backends 'company-tern)
+                          '(add-to-list 'auto-mode-alist '("\\.js" . js2-mode)))
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+    (add-to-list 'auto-mode-alist `(,(rx ".js" string-end) . js2-mode))
+    (add-hook 'js-mode-hook (lambda ()
+                              (tern-mode)
+                              (company-mode)))
+    (add-hook 'js2-mode-hook (lambda ()
+                               (tern-mode)
+                               (company-mode))))
+  ;; (use-package company-tern
+    ;; (add-to-list 'company-backends 'company-tern)
+    )
 
 (defun zilongshanren-programming/init-compile-dwim ()
   (use-package compile-dwim
@@ -324,19 +345,31 @@
 
 (defun zilongshanren-programming/post-init-js2-mode ()
   (progn
+    (add-to-list 'company-backends 'company-tern)
     (add-hook 'js2-mode-hook 'my-setup-develop-environment)
     (add-hook 'web-mode-hook 'my-setup-develop-environment)
+    ;; (syntax-checking-enable-by-default t)
 
     (spacemacs|define-jump-handlers js2-mode)
     (add-hook 'spacemacs-jump-handlers-js2-mode 'etags-select-find-tag-at-point)
 
-    (setq company-backends-js2-mode '((company-dabbrev-code :with company-keywords company-etags)
+    ;; (add-to-list 'company-backends 'company-tern)
+    (setq company-backends-js2-mode '(company-tern
+                                      (company-dabbrev-code :with company-keywords company-etags)
                                       company-files company-dabbrev))
 
     (setq company-backends-js-mode '((company-dabbrev-code :with company-keywords company-etags)
                                      company-files company-dabbrev))
 
-    (add-hook 'js2-mode-hook 'my-js2-mode-hook)
+    ;; (setq tern-command '("node" "~/.nvm/versions/node/v11.14.0/bin/tern"))
+    ;; (add-hook 'js2-mode-hook 'my-js2-mode-hook)
+    ;; (add-to-list 'load-path "~/emacs/tern/emacs/")
+    (add-hook 'js2-mode-hook (lambda ()
+                               (tern-mode t)
+                               (my-js2-mode-hook)
+                               (company-mode t)
+                               (setq company-tooltip-align-annotations t)
+                               (add-to-list 'company-backends 'company-tern)))
 
     ;; add your own keywords highlight here
     (font-lock-add-keywords 'js2-mode
@@ -577,3 +610,4 @@
     (setq company-c-headers-path-user
           (quote
            ("/Users/guanghui/cocos2d-x/cocos/platform" "/Users/guanghui/cocos2d-x/cocos" "." "/Users/guanghui/cocos2d-x/cocos/audio/include/")))))
+
