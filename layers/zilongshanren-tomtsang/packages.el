@@ -30,6 +30,12 @@
     pyim-wbdict
     pyim-basedict
     pyim
+
+    sdcv
+    ;; (sdcv-mode :location (recipe
+    ;;                       :fetcher github
+    ;;                       :repo "gucong/emacs-sdcv"))
+
     ;; vmd-mode
     ;; (ox-hugo :location (recipe :fetcher github :repo "kaushalmodi/ox-hugo"))
     ;; (zilongshanren-org :location built-in)
@@ -43,13 +49,89 @@
     ;; plain-org-wiki
     ))
 
+;; (defun zilongshanren-tomtsang/init-sdcv-mode ()
+;;   (use-package sdcv-mode
+;;     :demand t
+;;     :config
+;;     (add-hook 'sdcv-mode-hook 'spacemacs/toggle-visual-line-navigation-on)
+
+;;     (defun sdcv-search-at-point ()
+;;       (interactive)
+;;       (sdcv-search (ag/region-or-word-at-point-str) nil nil t))
+
+;;     (spacemacs/set-leader-keys "xll" #'sdcv-search-at-point)
+
+;;     (evil-define-key 'normal sdcv-mode-map "q" #'sdcv-return-from-sdcv)
+;;     (evil-define-key 'normal sdcv-mode-map "n" #'sdcv-next-entry)
+;;     (evil-define-key 'normal sdcv-mode-map "p" #'sdcv-previous-entry)
+;;     (evil-define-key 'normal sdcv-mode-map (kbd "RET") #'sdcv-search-at-point)
+;;     (evil-define-key 'normal sdcv-mode-map "a" #'sdcv-search-at-point)))
+
+(defun zilongshanren-tomtsang/init-sdcv ()
+  (use-package sdcv
+    ;; :demand t
+    :init
+    :config
+    (load-file "/mnt/c/Users/a/.spacemacs.d/layers/manaul-install/posframe.el")
+    (load-file "/mnt/c/Users/a/.spacemacs.d/layers/manaul-install/sdcv.el")
+
+    ;; (setq wenshan-emacs-data-dir "/mnt/c/Users/a/emacs-data-dir")
+
+    (setq sdcv-say-word-p nil) 		; do not pronounce
+
+    ;; (setq sdcv-dictionary-data-dir "~/emacs-data-dir/sdcv")
+    (setq sdcv-dictionary-data-dir "~/.stardict/dic")
+    ;; (setq sdcv-dictionary-data-dir "~/.stardict/dic/stardict21shijishuangyukejicidian242")
+    ;; (setq sdcv-dictionary-data-dir (concat wenshan-emacs-data-dir "/sdcv"))
+
+    (setq sdcv-dictionary-simple-list
+          '(
+            "21世纪双语科技词典"
+            "懒虫简明英汉词典"
+            "英汉汉英专业词典"
+            "CDICT5英汉辞典"
+            ))
+          ;; '("21shijishuangyukejicidian"
+            ;; '("stardict-21shijishuangyukejicidian-2.4.2"
+            ;; ))
+
+    (setq sdcv-dictionary-complete-list
+          '(
+            "21世纪双语科技词典"
+            "CDICT5英汉辞典"
+            "懒虫简明英汉词典"
+            "英汉汉英专业词典"
+            ;; "21世纪双语科技词典"
+            ))
+          ;; '(
+            ;; "懒虫简明英汉词典"
+            ;; "英汉汉英专业词典"
+            ;; "KDic11万英汉词典"
+            ;; "XDICT英汉辞典"
+            ;; "stardict1.3英汉辞典"
+            ;; "WordNet"
+            ;; "XDICT汉英辞典"
+            ;; "Jargon"
+            ;; "懒虫简明汉英词典"
+            ;; "FOLDOC"
+            ;; "新世纪英汉科技大词典"
+            ;; "朗道汉英字典5.0"
+            ;; "CDICT5英汉辞典"
+            ;; "新世纪汉英科技大词典"
+            ;; "牛津英汉双解美化版"
+            ;; "21世纪双语科技词典"
+            ;; "quick_eng-zh_CN"
+            ;; ))
+
+    )
+  )
 
 (defun zilongshanren-tomtsang/init-pyim-wbdict ()
-    (use-package pyim-wbdict
-      :ensure nil
-      ;:config (pyim-wbdict-gbk-enable))
-      :config (pyim-wbdict-v98-enable))
-    :init)
+  (use-package pyim-wbdict
+    :ensure nil
+                                        ;:config (pyim-wbdict-gbk-enable))
+    :config (pyim-wbdict-v98-enable))
+  :init)
 
 (defun zilongshanren-tomtsang/init-pyim()
   "Initialize pyim"
@@ -69,6 +151,7 @@
     (setq pyim-page-tooltip 'posframe)
     (setq pyim-dicts '((:name "基础词库" :file "~/.spacemacs.d/utils/wbdict.pyim")))
     (global-set-key (kbd "C-9") 'toggle-input-method)
+    ;; (global-set-key (kbd "C-,") 'toggle-input-method)
     ))
 
 ;; (defun zilongshanren-tomtsang/init-pyim ()
@@ -157,6 +240,11 @@
   (use-package flycheck
     :init))
 
+
+(defun zilongshanren-tomtsang/post-init-flycheck-mode ()
+  (global-flycheck-mode t)
+  (add-hook 'js2-mode-hook 'flycheck-mode)
+  )
 
 (defun zilongshanren-tomtsang/init-elpy ()
   (use-package elpy
