@@ -372,6 +372,15 @@ values."
 (defun dotspacemacs/user-config ()
   ;; (global-flycheck-mode t)
   (add-hook 'js2-mode-hook 'flycheck-mode)
+
+  ;; prettier
+  (eval-after-load 'web-mode
+    '(progn
+       (add-hook 'web-mode-hook #'add-node-modules-path)))
+
+  (require 'prettier-js)
+  (setq prettier-js-command "prettier-eslint_d")
+
   ;; (require 'company-tern)
   ;; (require 'company-mode)
   ;; (add-to-list 'company-backends 'company-tern)
