@@ -367,6 +367,12 @@ values."
   (setq warning-minimum-level :error)
   ;; hack for remove purpose mode
   (setq purpose-mode nil)
+
+  ;; (setq js2-include-node-externs t)
+
+  ;; Turn off js2 mode errors & warnings (we lean on eslint/standard)
+  ;; (setq js2-mode-show-parse-errors nil)
+  ;; (setq js2-mode-show-strict-warnings nil)
   )
 
 (defun dotspacemacs/user-config ()
@@ -470,13 +476,14 @@ values."
   (global-display-line-numbers-mode -1)
 
   (defun moon-override-yank-pop (&optional arg)
-      "Delete the region before inserting poped string."
-      (when (and evil-mode (eq 'visual evil-state))
-        (kill-region (region-beginning) (region-end))))
+    "Delete the region before inserting poped string."
+    (when (and evil-mode (eq 'visual evil-state))
+      (kill-region (region-beginning) (region-end))))
 
-(advice-add 'counsel-yank-pop :before #'moon-override-yank-pop)
+  (advice-add 'counsel-yank-pop :before #'moon-override-yank-pop)
 
   ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
+  ;; (add-hook 'js2-mode-hook 'spacemacs/toggle-spelling-checking-on)
   )
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
