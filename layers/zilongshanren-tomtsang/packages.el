@@ -73,6 +73,8 @@
     :init
     :config
 
+    (add-to-list 'load-path (expand-file-name "~/.spacemacs.d/layers/manaul-install/"))
+    (require 'company-english-helper)
     (load-file "~/.spacemacs.d/layers/manaul-install/posframe.el")
     (load-file "~/.spacemacs.d/layers/manaul-install/sdcv.el")
 
