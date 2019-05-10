@@ -580,10 +580,13 @@ Argument DICTIONARY-LIST the word that need transform."
 (defun sdcv-translate-result (word dictionary-list)
   "Call sdcv to search word in dictionary list, return filtered
 string of results."
+  ;; (message "sdcv-translate-result word is %s" word)
+  ;; (message "sdcv-translate-result dictionary-list is %s" dictionary-list)
   (sdcv-filter
    (shell-command-to-string
     ;; Set LANG environment variable, make sure `shell-command-to-string' can handle CJK character correctly.
-    (format "LANG=en_US.UTF-8 %s -x -n %s %s --data-dir=%s"
+    ;; (format "LANG=en_US.UTF-8 %s -x -n %s %s --data-dir=%s"
+    (format "LANG=en_US.UTF-8 %s -n %s %s --data-dir=%s"
             sdcv-program
             (mapconcat (lambda (dict)
                          (concat "-u \"" dict "\""))
