@@ -164,7 +164,7 @@
 (defvar insert-translated-name-translate-engine "google"
   "The translate engine can use \"google\" or \"youdao\".")
 
-(defvar insert-translated-name-default-style "underline"
+(defvar insert-translated-name-default-style "origin"
   "The default translation style, which can be set to \"origin\", \"line\", \"camel\" or \"underline\".")
 ;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;
 (defun insert-translated-name-insert (arg)
