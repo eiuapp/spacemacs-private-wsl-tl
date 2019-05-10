@@ -582,6 +582,13 @@ Argument DICTIONARY-LIST the word that need transform."
 string of results."
   ;; (message "sdcv-translate-result word is %s" word)
   ;; (message "sdcv-translate-result dictionary-list is %s" dictionary-list)
+  ;; (message (format "LANG=en_US.UTF-8 %s -n %s %s --data-dir=%s"
+  ;;                  sdcv-program
+  ;;                  (mapconcat (lambda (dict)
+  ;;                               (concat "-u \"" dict "\""))
+  ;;                             dictionary-list " ")
+  ;;                  word
+  ;;                  sdcv-dictionary-data-dir))
   (sdcv-filter
    (shell-command-to-string
     ;; Set LANG environment variable, make sure `shell-command-to-string' can handle CJK character correctly.
