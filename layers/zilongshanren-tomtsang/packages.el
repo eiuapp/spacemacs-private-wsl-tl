@@ -75,6 +75,8 @@
 
     (add-to-list 'load-path (expand-file-name "~/.spacemacs.d/layers/manaul-install/"))
     (require 'company-english-helper)
+    (require 'insert-translated-name)
+
     (load-file "~/.spacemacs.d/layers/manaul-install/posframe.el")
     (load-file "~/.spacemacs.d/layers/manaul-install/sdcv.el")
 
