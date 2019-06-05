@@ -25,6 +25,8 @@
               (:eval (if (buffer-file-name)
                          (abbreviate-file-name (buffer-file-name)) "%b"))))
 
+;; change the title bar's icon
+(set-frame-parameter (car (frame-list)) 'icon-type  "~/.spacemacs.d/utils/images/ecoicon05_122077.png")
 
 ;; (define-fringe-bitmap 'right-curly-arrow
 ;;   [#b00000000
