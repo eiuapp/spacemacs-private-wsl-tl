@@ -348,6 +348,9 @@ values."
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup 'changed
+
+  ;; dotspacemacs-frame-title-format "%t"
+   dotspacemacs-icon-title-format nil
    ))
 
 (defun dotspacemacs/user-init ()
