@@ -380,6 +380,8 @@ values."
   )
 
 (defun dotspacemacs/user-config ()
+  (kill-buffer "*spacemacs*")
+
   ;; (global-flycheck-mode t)
   (add-hook 'js2-mode-hook 'flycheck-mode)
 
