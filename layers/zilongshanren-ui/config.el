@@ -27,23 +27,23 @@
 
 ;; change the title bar's icon
 (set-frame-parameter (car (frame-list)) 'icon-type  "~/.spacemacs.d/utils/images/ecoicon05_122077.png")
+(define-fringe-bitmap 'right-curly-arrow
+  [#b00000000
+   #b00000000
+   #b00000000
+   #b00000000
+   #b01110000
+   #b00010000
+   #b00010000
+   #b00000000])
 
-;; (define-fringe-bitmap 'right-curly-arrow
-;;   [#b00000000
-;;    #b00000000
-;;    #b00000000
-;;    #b00000000
-;;    #b01110000
-;;    #b00010000
-;;    #b00010000
-;;    #b00000000])
+(define-fringe-bitmap 'left-curly-arrow
+  [#b00000000
+   #b00001000
+   #b00001000
+   #b00001110
+   #b00000000
+   #b00000000
+   #b00000000
+   #b00000000])
 
-;; (define-fringe-bitmap 'left-curly-arrow
-;;   [#b00000000
-;;    #b00001000
-;;    #b00001000
-;;    #b00001110
-;;    #b00000000
-;;    #b00000000
-;;    #b00000000
-;;    #b00000000])
