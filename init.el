@@ -106,7 +106,7 @@ values."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages
-   '(magit-gh-pulls magit-gitflow  evil-mc realgud tern
+   '(magit-gh-pulls magit-gitflow  evil-mc realgud tern company-tern
                     evil-args evil-ediff evil-exchange evil-unimpaired
                     evil-indent-plus volatile-highlights smartparens
                     spaceline holy-mode skewer-mode rainbow-delimiters
@@ -114,7 +114,7 @@ values."
                     org-bullets smooth-scrolling org-repo-todo org-download org-timer
                     livid-mode git-gutter git-gutter-fringe  evil-escape
                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
-                    ac-ispell ace-jump-mode auto-dictionary
+                    ac-ispell ace-jump-mode auto-complete auto-dictionary
                     clang-format define-word google-translate disaster epic
                     fancy-battery org-present orgit orglue spacemacs-theme
                     helm-flyspell flyspell-correct-helm clean-aindent-mode
