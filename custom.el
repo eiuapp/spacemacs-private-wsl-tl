@@ -28,6 +28,9 @@
  '(magit-use-overlays nil)
  '(only-global-abbrevs t)
  '(org-agenda-custom-commands nil)
+ '(org-agenda-files
+   (quote
+    ("~/org/ubuntu/update-kernel/update-kernel.org" "~/org/ubuntu/ubuntu-desktop/index.org" "~/org/ubuntu/index.org" "~/org/ubuntu/how-to-install-certificates-for-command-line.org" "~/org/all-posts.org" "~/org/README.org" "~/org/golang.org" "~/org/journal.org" "~/org/gtd.org" "~/org/emacs/emacs.org" "~/org/emacs/eshell.org" "~/org/emacs/yasnippet.org" "~/org/inbox.org" "~/org/env.org" "~/org/k8s/source.org" "~/org/k8s/cephfs/index.org" "~/org/k8s/storage.org" "~/org/k8s/nfs-k8s-yaml.org" "~/org/k8s/install/kubeadm-install-faq.org" "~/org/k8s/install/index.org" "~/org/k8s/upgrade/index.org" "~/org/k8s/index.org" "~/org/mac.org" "~/org/shell/file.org" "~/org/notes.org" "~/org/sed/sed-string.org" "~/org/vim-redo.org" "~/org/hugo/themes/jane/index.org" "~/org/hugo/hugo-archetypes.org" "~/org/hugo/hugo-emacs.org" "~/org/hugo/hugo-server-faq.org" "~/org/docker/docker-registry/index.org" "~/org/docker/docker-install-ubuntu/docker-install-ubuntu.org" "~/org/docker/index.org" "~/org/git.org")))
  '(org-agenda-ndays 1)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)
@@ -36,6 +39,7 @@
  '(org-agenda-start-on-weekday nil)
  '(org-agenda-text-search-extra-files (quote (agenda-archives)))
  '(org-deadline-warning-days 14)
+ '(org-directory "~/bitbucket/qqbb/tomtsang-rootsongjc-hugo/org" t)
  '(org-fast-tag-selection-single-key (quote expert))
  '(org-log-into-drawer t)
  '(org-pomodoro-play-sounds nil)
