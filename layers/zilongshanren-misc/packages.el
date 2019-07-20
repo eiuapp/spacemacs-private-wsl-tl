@@ -41,7 +41,7 @@
         wrap-region
         ranger
         golden-ratio
-        ;; (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
+        (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         browse-at-remote
         ))
 
