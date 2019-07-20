@@ -5,7 +5,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ahs-case-fold-search nil)
+ '(ahs-case-fold-search nil t)
  '(command-log-mode-window-size 50)
  '(company-dabbrev-minimum-length 3)
  '(company-dabbrev-other-buffers nil)
@@ -54,9 +54,13 @@
  '(ring-bell-function (quote ignore))
  '(safe-local-variable-values
    (quote
-    ((eval progn
-           (pp-buffer)
-           (indent-buffer))
+	;; ((eval progn
+	;;    (pp-buffer)
+	;;    (indent-buffer))
+    ((eval add-hook
+           (quote after-save-hook)
+           (function org-hugo-export-wim-to-md)
+           :append :local)
      (typescript-backend . tide)
      (typescript-backend . lsp)
      (javascript-backend . tern)
