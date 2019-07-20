@@ -23,7 +23,7 @@
     ein
     elpy
     flycheck
-
+    django-mode
     (org :location built-in)
     ox-hugo
     py-autopep8
@@ -48,7 +48,10 @@
     ;; org-download
     ;; plain-org-wiki
     ))
-
+    
+(defun zilongshanren-tomtsang/init-django-mode ()
+  (use-package django-mode
+    :init))
 ;; (defun zilongshanren-tomtsang/init-sdcv-mode ()
 ;;   (use-package sdcv-mode
 ;;     :demand t
