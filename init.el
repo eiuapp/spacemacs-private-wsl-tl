@@ -380,6 +380,20 @@ values."
   )
 
 (defun dotspacemacs/user-config ()
+
+  (defconst macp (eq system-type 'darwin))
+  (message "%s" macp)
+
+  ;; emacspeak
+  (require 'cl)
+  (setq load-path (cons "~/emacs/emacspeak/lisp" load-path))
+  (setq emacspeak-directory "~/emacs/emacspeak")
+  (setq dtk-program "mac")
+  (require 'emacspeak-setup)
+  (require 'mac-voices)
+  (emacspeak-tts-startup-hook)
+  (dtk-set-rate 300 t)
+  
   (kill-buffer "*spacemacs*")
 
   ;; (global-flycheck-mode t)
