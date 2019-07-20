@@ -59,7 +59,7 @@ values."
           osx-command-as 'super)
      restclient
      (gtags :disabled-for clojure emacs-lisp javascript latex python shell-scripts)
-     (shell :variables shell-default-shell 'eshell)
+     (shell :variables shell-default-shell 'shell)
      ;; docker
      latex
      deft
