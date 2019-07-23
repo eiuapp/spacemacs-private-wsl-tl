@@ -384,16 +384,23 @@ values."
   (defconst macp (eq system-type 'darwin))
   (message "%s" macp)
 
-  ;; emacspeak
-  (require 'cl)
-  (setq load-path (cons "~/emacs/emacspeak/lisp" load-path))
-  (setq emacspeak-directory "~/emacs/emacspeak")
-  (setq dtk-program "mac")
-  (require 'emacspeak-setup)
-  (require 'mac-voices)
-  (emacspeak-tts-startup-hook)
-  (dtk-set-rate 300 t)
+  ;; ;; emacspeak mac
+  ;; (require 'cl)
+  ;; (setq load-path (cons "~/emacs/emacspeak/lisp" load-path))
+  ;; (setq emacspeak-directory "~/emacs/emacspeak")
+  ;; (setq dtk-program "mac")
+  ;; (require 'emacspeak-setup)
+  ;; (require 'mac-voices)
+  ;; (emacspeak-tts-startup-hook)
+  ;; (dtk-set-rate 300 t)
+
+  ;; ;; emacspeak outloud
+  ;; (setenv "DTK_PROGRAM" "outloud")
+  ;; (load-file "/mnt/c/Users/a/emacs/emacspeak-src/emacspeak_voxin_install-49.0-6/build/emacspeak-49.0/lisp/emacspeak-setup.el")
   
+  ;; ;; emacspeak espeak
+  ;; (setenv "DTK_PROGRAM" "espeak")
+
   (kill-buffer "*spacemacs*")
 
   ;; (global-flycheck-mode t)
@@ -504,7 +511,9 @@ values."
 
   ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
   ;; (add-hook 'js2-mode-hook 'spacemacs/toggle-spelling-checking-on)
-  )
+
+  
+)
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
