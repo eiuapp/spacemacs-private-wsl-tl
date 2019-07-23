@@ -120,9 +120,13 @@
 (defun zilongshanren-tomtsang/init-pyim-wbdict ()
   (use-package pyim-wbdict
     :ensure nil
-                                        ;:config (pyim-wbdict-gbk-enable))
     :config (pyim-wbdict-v98-enable))
   :init)
+
+(defun zilongshanren-tomtsang/init-pyim-basedict ()
+  (use-package pyim-basedict
+    :ensure nil)
+    :init)
 
 (defun zilongshanren-tomtsang/init-pyim()
   "Initialize pyim"
