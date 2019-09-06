@@ -30,8 +30,10 @@
     pyim-wbdict
     pyim-basedict
     pyim
-
     sdcv
+    bug-hunter
+    proxy-mode
+    w3m
     ;; (sdcv-mode :location (recipe
     ;;                       :fetcher github
     ;;                       :repo "gucong/emacs-sdcv"))
@@ -48,7 +50,31 @@
     ;; org-download
     ;; plain-org-wiki
     ))
-    
+
+;; w3m
+(defun zilongshanren-tomtsang/init-w3m ()
+  (use-package w3m
+    :init
+    (setq w3m-command-arguments
+          (nconc w3m-command-arguments
+                 '("-o" "http_proxy=http://127.0.0.1:8118/")))
+    )
+  )
+
+;; proxy-mode
+(defun zilongshanren-tomtsang/init-proxy-mode ()
+  (use-package proxy-mode
+    :init
+    :config
+    (setq url-gateway-local-host-regexp
+          (concat "\\`" (regexp-opt '("localhost" "127.0.0.1")) "\\'"))
+    )
+  )
+
+(defun zilongshanren-tomtsang/init-bug-hunter ()
+  (use-package bug-hunter
+    :init))
+
 (defun zilongshanren-tomtsang/init-django-mode ()
   (use-package django-mode
     :init))

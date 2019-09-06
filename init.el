@@ -124,7 +124,7 @@ values."
                     window-purpose ivy-purpose helm-purpose spacemacs-purpose-popwin
 		            clojure-cheatsheet
                     )
-   dotspacemacs-install-packages 'used-only
+   dotspacemacs-install-packages '(used-only w3m)
    dotspacemacs-delete-orphan-packages t))
 
 (defun dotspacemacs/init ()
@@ -380,12 +380,51 @@ values."
   )
 
 (defun dotspacemacs/user-config ()
+  ;; w3m start
+  ;; https://forum.suse.org.cn/t/emacs-w3m/2918
+  ;; 使用 w3m 作为默认浏览器
+  (setq browse-url-browser-function 'w3m-browse-url)
+  (setq w3m-view-this-url-new-session-in-background t)
+
+
+  ;; 显示图标
+  (setq w3m-show-graphic-icons-in-header-line t)
+  (setq w3m-show-graphic-icons-in-mode-line t)
+
+  ;; 这行代码是抄了一个比较老的 Emacs 配置的，貌似现在没有什么效果了
+  ;;(setq w3m-view-this-url-new-session-in-background t)
+
+  (add-hook 'w3m-fontify-after-hook 'remove-w3m-output-garbages)
+  (defun remove-w3m-output-garbages ()
+    " 去掉 w3m 输出的垃圾."
+    (interactive)
+    (let ((buffer-read-only))
+      (setf (point) (point-min))
+      (while (re-search-forward "\200-\240]" nil t)
+        (replace-match " "))
+      (set-buffer-multibyte t))
+    (set-buffer-modified-p nil))
+
+  (setq w3m-search-default-engine "baidu")
+
+  (eval-after-load "w3m-search" '(progn
+    (add-to-list 'w3m-search-engine-alist '("baidu"
+     "http://www.baidu.com/baidu?wd=%s" utf-8))
+    (add-to-list 'w3m-search-engine-alist '("wz"
+     "http://zh.wikipedia.org/wiki/Special:Search?search=%s" utf-8))
+    (add-to-list 'w3m-search-engine-alist '("q"
+     "http://www.google.com/search?hl=en&q=%s+site:stackoverflow.com" utf-8))
+    (add-to-list 'w3m-search-engine-alist '("s"
+     "http://code.google.com/codesearch?q=%s" utf-8))))
+
+  ;; w3m end
+
 
   ;; https://blog.csdn.net/u010654583/article/details/73920206
   ;; I. 显示时间
   ;; .emacs加上：
-  (display-time-mode 1) ;; 常显
-  (setq display-time-24hr-format t) ;;格式
+  (display-time-mode 1)              ;; 常显
+  (setq display-time-24hr-format t)  ;;格式
   (setq display-time-day-and-date t) ;;显示时间、星期、日期
 
   ;; II. 隐藏菜单栏工具栏滚动条
@@ -535,7 +574,7 @@ values."
   ;; (add-hook 'js2-mode-hook 'spacemacs/toggle-spelling-checking-on)
 
   
-)
+  )
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
