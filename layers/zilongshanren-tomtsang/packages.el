@@ -51,15 +51,60 @@
     ;; plain-org-wiki
     ))
 
-;; w3m
+;; w3m start
 (defun zilongshanren-tomtsang/init-w3m ()
   (use-package w3m
     :init
-    (setq w3m-command-arguments
-          (nconc w3m-command-arguments
-                 '("-o" "http_proxy=http://127.0.0.1:8118/")))
     )
   )
+
+(defun zilongshanren-tomtsang/post-init-w3m ()
+
+  ;; w3m post start
+  ;; https://forum.suse.org.cn/t/emacs-w3m/2918
+
+  ;; 使用 w3m 作为默认浏览器
+  (setq browse-url-browser-function 'w3m-browse-url)
+  (setq w3m-view-this-url-new-session-in-background t)
+
+  ;; 显示图标
+  (setq w3m-show-graphic-icons-in-header-line t)
+  (setq w3m-show-graphic-icons-in-mode-line t)
+
+  ;; 这行代码是抄了一个比较老的 Emacs 配置的，貌似现在没有什么效果了
+  ;;(setq w3m-view-this-url-new-session-in-background t)
+
+  (add-hook 'w3m-fontify-after-hook 'remove-w3m-output-garbages)
+  (defun remove-w3m-output-garbages ()
+    " 去掉 w3m 输出的垃圾."
+    (interactive)
+    (let ((buffer-read-only))
+      (setf (point) (point-min))
+      (while (re-search-forward "\200-\240]" nil t)
+        (replace-match " "))
+      (set-buffer-multibyte t))
+    (set-buffer-modified-p nil))
+
+  (setq w3m-search-default-engine "baidu")
+
+  (eval-after-load "w3m-search" '(progn
+    (add-to-list 'w3m-search-engine-alist '("baidu"
+     "http://www.baidu.com/baidu?wd=%s" utf-8))
+    (add-to-list 'w3m-search-engine-alist '("wz"
+     "http://zh.wikipedia.org/wiki/Special:Search?search=%s" utf-8))
+    (add-to-list 'w3m-search-engine-alist '("q"
+     "http://www.google.com/search?hl=en&q=%s+site:stackoverflow.com" utf-8))
+    (add-to-list 'w3m-search-engine-alist '("s"
+     "http://code.google.com/codesearch?q=%s" utf-8))))
+
+  ;; Proxy Gateway
+  (setq w3m-command-arguments
+    (nconc w3m-command-arguments
+      '("-o" "http_proxy=http://127.0.0.1:8118/")))
+  (setq w3m-no-proxy-domains '("local.com" "192.168.168.137" "127.0.0.1" "baidu.com" "qq.com"))
+  ;; w3m post end
+)
+;; w3m end
 
 ;; proxy-mode
 (defun zilongshanren-tomtsang/init-proxy-mode ()
