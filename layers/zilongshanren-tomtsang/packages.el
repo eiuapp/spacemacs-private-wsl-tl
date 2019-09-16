@@ -215,7 +215,7 @@
               #'(lambda () (pyim-restart-1 t)))
 
     (setq pyim-page-tooltip 'posframe)
-    (setq pyim-dicts '((:name "基础词库" :file "~/.spacemacs.d/utils/wbdict.pyim")))
+    (setq pyim-dicts '((:name "基础词库" :file "~/.spacemacs.d/layers/zilongshanren-tomtsang/utils/wbdict.pyim")))
     (global-set-key (kbd "C-9") 'toggle-input-method)
     ;; (global-set-key (kbd "C-,") 'toggle-input-method)
     ))

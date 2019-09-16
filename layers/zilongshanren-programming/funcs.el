@@ -45,50 +45,10 @@ comment box."
   (which-function))
 
 (defun zilongshanren/run-current-file ()
-  "Execute the current file.
-For example, if the current buffer is the file x.py, then it'll call 「python x.py」 in a shell.
-The file can be emacs lisp, php, perl, python, ruby, javascript, bash, ocaml, Visual Basic.
-File suffix is used to determine what program to run.
-
-If the file is modified, ask if you want to save first.
-
-URL `http://ergoemacs.org/emacs/elisp_run_current_file.html'
-version 2015-08-21"
+  "Compile and/or Execute the current file."
   (interactive)
-  (let* (
-         (ξsuffix-map
-          ;; (‹extension› . ‹shell program name›)
-          `(
-            ("php" . "php")
-            ("pl" . "perl")
-            ("py" . "python")
-            ("py3" . ,(if (string-equal system-type "windows-nt") "c:/Python32/python.exe" "python3"))
-            ("rb" . "ruby")
-            ("js" . "node") ; node.js
-            ("sh" . "bash")
-            ;; ("clj" . "java -cp /home/xah/apps/clojure-1.6.0/clojure-1.6.0.jar clojure.main")
-            ("ml" . "ocaml")
-            ("vbs" . "cscript")
-            ("tex" . "pdflatex")
-            ("lua" . "lua")
-            ;; ("pov" . "/usr/local/bin/povray +R2 +A0.1 +J1.2 +Am2 +Q9 +H480 +W640")
-            ))
-         (ξfname (buffer-file-name))
-         (ξfSuffix (file-name-extension ξfname))
-         (ξprog-name (cdr (assoc ξfSuffix ξsuffix-map)))
-         (ξcmd-str (concat ξprog-name " \""   ξfname "\"")))
-
-    (when (buffer-modified-p)
-      (when (y-or-n-p "Buffer modified. Do you want to save first?")
-        (save-buffer)))
-
-    (if (string-equal ξfSuffix "el") ; special case for emacs lisp
-        (load ξfname)
-      (if ξprog-name
-          (progn
-            (message "Running…")
-            (async-shell-command ξcmd-str "*zilongshanren/run-current-file output*"))
-        (message "No recognized program file suffix for this file.")))))
+  ;; (call-interactively #'compile-dwim-compile)
+  (call-interactively #'compile-dwim-run))
 
 
 
@@ -123,7 +83,7 @@ version 2015-08-21"
     (progn
       (yas-global-mode 1)
       (setq my-snippet-dir (expand-file-name "~/.spacemacs.d/snippets"))
-      (setq yas-snippet-dirs  my-snippet-dir)
+      (setq yas-snippet-dirs '(my-snippet-dir))
       (yas-load-directory my-snippet-dir)
       (setq yas-wrap-around-region t)))
   (yas-minor-mode 1))
@@ -143,6 +103,12 @@ version 2015-08-21"
     (setq new-buffer-name (concat "cmake-" parent-dir))
     (rename-buffer new-buffer-name t)))
 
+(defun my-ts-mode-hook ()
+  (when (eq major-mode 'typescript-mode)
+    (progn
+      (with-eval-after-load 'flycheck
+        (add-to-list 'flycheck-disabled-checkers 'javascript-eslint)
+        (flycheck-disable-checker 'javascript-eslint)))))
 
 (defun my-js2-mode-hook ()
   (progn
@@ -167,6 +133,17 @@ version 2015-08-21"
 (defun js2-imenu-make-index ()
   (interactive)
   (save-excursion
+    ;; this imenu generic expression aims to exclude for, while, if when aims to match functions in
+    ;; es6 js, e.g. ComponentDidMount(), render() function in React
+    ;; https://emacs-china.org/t/topic/4538/7
+    (defun js-exception-imenu-generic-expression-regexp ()
+      ;; (async)? xxx (e) { }
+      (if (re-search-backward "^[ \t]*\\(async\\|get\\|set\\)?[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*([\{a-zA-Z0-9, \\\)\(/'\"\*=\t\n\}]*) *\{ *" nil t)
+          (progn
+            (if (member (match-string 2) '("for" "if" "while" "switch"))
+                (js-exception-imenu-generic-expression-regexp)
+              t))
+        nil))
     ;; (setq imenu-generic-expression '((nil "describe\\(\"\\(.+\\)\"" 1)))
     (imenu--generic-function '(("describe" "\\s-*describe\\s-*(\\s-*[\"']\\(.+\\)[\"']\\s-*,.*" 1)
                                ("it" "\\s-*it\\s-*(\\s-*[\"']\\(.+\\)[\"']\\s-*,.*" 1)
@@ -188,14 +165,18 @@ version 2015-08-21"
                                ("OnChange" "[ \t]*\$(['\"]\\([^'\"]*\\)['\"]).*\.change *( *function" 1)
                                ("OnClick" "[ \t]*\$([ \t]*['\"]\\([^'\"]*\\)['\"]).*\.click *( *function" 1)
                                ("Watch" "[. \t]\$watch( *['\"]\\([^'\"]+\\)" 1)
+
+
+                               ("ES6 Function" js-exception-imenu-generic-expression-regexp 2) ;; (async)? xxx (e) { }
                                ("Function" "function[ \t]+\\([a-zA-Z0-9_$.]+\\)[ \t]*(" 1)
                                ("Function" "^[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*=[ \t]*function[ \t]*(" 1)
                                ("Function" "^var[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*=[ \t]*function[ \t]*(" 1)
-                               ("Function" "^[ \t]*\\([^while|for ][a-zA-Z0-9_$]*\\)[ \t]*([a-zA-Z0-9_$,/\\* ]*)[ \t]*" 1)
                                ("Function" "^[ \t]*static[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*()[ \t]*{" 1)
                                ("Function" "^[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*:[ \t]*function[ \t]*(" 1)
+
                                ("Class" "^[ \t]*var[ \t]*\\([0-9a-zA-Z]+\\)[ \t]*=[ \t]*\\([a-zA-Z]*\\).extend" 1)
                                ("Class" "^[ \t]*cc\.\\(.+\\)[ \t]*=[ \t]*cc\.\\(.+\\)\.extend" 1)
+
                                ("Task" "[. \t]task([ \t]*['\"]\\([^'\"]+\\)" 1)))))
 
 (defun my-doxymacs-font-lock-hook ()
@@ -260,3 +241,17 @@ version 2015-08-21"
       (message "load tags for fireball engine repo...")
       ;; html project donot need C++ tags
       (setq tags-table-list (list (my-create-tags-if-needed "~/Github/fireball/engine/cocos2d")))))))
+
+(defun zilongshanren-refresh-imenu-index ()
+  (interactive)
+  (when (or (eq major-mode 'js2-mode)
+            (eq major-mode 'typescript-mode))
+    (progn
+      (setq imenu-create-index-function 'js2-imenu-make-index)
+
+      (when (eq major-mode 'typescript-mode)
+        (setq imenu-create-index-function 'lsp--imenu-create-index))
+
+      (setq-local company-backends (remove 'company-lsp company-backends))
+      (setq-local company-backends '((company-dabbrev-code :with company-keywords company-etags)
+                                     company-files company-dabbrev)))))

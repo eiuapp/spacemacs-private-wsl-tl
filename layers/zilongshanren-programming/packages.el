@@ -47,6 +47,8 @@
         ;; editorconfig
         robe
         exec-path-from-shell
+        lsp-mode
+        typescript-mode
         ))
 
 (defun zilongshanren-programming/init-company-tern ()
@@ -68,6 +70,64 @@
   ;; (use-package company-tern
     ;; (add-to-list 'company-backends 'company-tern)
     )
+
+(defun zilongshanren-programming/post-init-typescript-mode ()
+  (add-hook 'typescript-mode-hook 'my-ts-mode-hook))
+
+(defun zilongshanren-programming/post-init-lsp-mode ()
+  (progn
+
+    (setq lsp-ui-doc-enable nil)
+    
+    (defun lsp--auto-configure ()
+      "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
+
+      (with-no-warnings
+        (when (functionp 'lsp-ui-mode)
+          (lsp-ui-mode))
+
+        (cond
+         ((eq :none lsp-prefer-flymake))
+         ((and (not (version< emacs-version "26.1")) lsp-prefer-flymake)
+          (lsp--flymake-setup))
+         ((and (functionp 'lsp-ui-mode) (featurep 'flycheck))
+          (require 'lsp-ui-flycheck)
+          (lsp-ui-flycheck-enable t)
+          (flycheck-mode -1)))
+
+        (when (functionp 'company-lsp)
+          (company-mode 1)
+
+          ;; make sure that company-capf is disabled since it is not indented to be
+          ;; used in combination with lsp-mode (see #884)
+          (setq-local company-backends (remove 'company-capf company-backends))
+
+          (when (functionp 'yas-minor-mode)
+            (yas-minor-mode t)))))
+    
+    (add-hook 'lsp-after-open-hook 'zilongshanren-refresh-imenu-index)
+
+    (defun hidden-lsp-ui-sideline ()
+      (interactive)
+      (if (< (window-width) 180)
+          (progn
+            
+            (setq lsp-ui-sideline-show-code-actions nil)
+            (setq lsp-ui-sideline-show-diagnostics nil)
+            (setq lsp-ui-sideline-show-hover nil)
+            (setq lsp-ui-sideline-show-symbol nil))
+        (progn
+            
+          (setq lsp-ui-sideline-show-code-actions nil)
+          ;; (setq lsp-ui-sideline-show-diagnostics t)
+          (setq lsp-ui-sideline-show-hover t)
+          ;; (setq lsp-ui-sideline-show-symbol t)
+          )))
+    
+    (advice-add 'lsp-ui-sideline--run :after 'hidden-lsp-ui-sideline)
+
+    (setq lsp-auto-configure t)
+    (setq lsp-prefer-flymake nil)))
 
 (defun zilongshanren-programming/init-compile-dwim ()
   (use-package compile-dwim
@@ -227,6 +287,12 @@
 (defun zilongshanren-programming/post-init-yasnippet ()
   (progn
     (set-face-background 'secondary-selection "gray")
+    
+    (with-eval-after-load 'yasnippet
+      (progn
+        (define-key yas-keymap [(tab)]       (yas-filtered-definition 'yas-next-field))
+        (define-key yas-keymap (kbd "TAB")   (yas-filtered-definition 'yas-next-field))))
+
     (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
     (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
                                                                       org-mode-hook
@@ -353,7 +419,8 @@
     (spacemacs/set-leader-keys-for-major-mode 'js2-mode
       "r>" 'js2r-forward-slurp
       "r<" 'js2r-forward-barf
-      "r." 'js2r-toggle-object-property-access-style)))
+      "r." 'js2r-toggle-object-property-access-style
+      "rep" 'js2r-expand-call-args)))
 
 (defun zilongshanren-programming/post-init-js2-mode ()
   (progn
@@ -610,6 +677,11 @@
 
 (defun zilongshanren-programming/post-init-company ()
   (progn
+    (setq company-dabbrev-code-other-buffers 'all)
+    ;; enable dabbrev-expand in company completion https://emacs-china.org/t/topic/6381
+    (setq company-dabbrev-char-regexp "[\\.0-9a-z-_'/]")
+
+    
     (setq company-minimum-prefix-length 1
           company-idle-delay 0.08)
 
