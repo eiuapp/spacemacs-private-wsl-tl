@@ -966,8 +966,8 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 (defun zilongshanren-misc/post-init-pyim ()
   (progn
     ;; use librime as wubi input
-    ;; ²Î¿¼Õâ¸öÉèÖÃ pyim Ê¹ÓÃ liberime ¿â https://emacs-china.org/t/mac-emacs-rime/ ĞèÒªemacs 26µÄdynamic module¹¦ÄÜ 
-    ;; ÉèÖÃ¼«µãÎå±Ê¿ÉÒÔ²Î¿¼https://github.com/zilongshanren/rime-wubi86-jidian  
+    ;; å‚è€ƒè¿™ä¸ªè®¾ç½® pyim ä½¿ç”¨ liberime åº“ https://emacs-china.org/t/mac-emacs-rime/ éœ€è¦emacs 26çš„dynamic moduleåŠŸèƒ½ 
+    ;; è®¾ç½®æç‚¹äº”ç¬”å¯ä»¥å‚è€ƒhttps://github.com/zilongshanren/rime-wubi86-jidian  
     (eval-and-compile
       (if (fboundp 'window-inside-edges)
           ;; Emacs devel.
@@ -1015,11 +1015,11 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
                         pyim-probe-org-structure-template))
 
 
-        ;; ²»ÓÃÆµÂÊÇĞ»»ÊäÈë·¨ÁË¡£Õâ¸ö¶«Î÷Ì«ºÃÊ¹ÁË
+        ;; ä¸ç”¨é¢‘ç‡åˆ‡æ¢è¾“å…¥æ³•äº†ã€‚è¿™ä¸ªä¸œè¥¿å¤ªå¥½ä½¿äº†
         (bind-key* "s-j" 'pyim-convert-code-at-point)
 
         (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/Library/Rime"))
-        ;; Ê¹ÓÃÕâ¸öÀ´²é¿´µ±Ç°ÊäÈë·¨ÓĞÄÄĞ©£¬²»´í
+        ;; ä½¿ç”¨è¿™ä¸ªæ¥æŸ¥çœ‹å½“å‰è¾“å…¥æ³•æœ‰å“ªäº›ï¼Œä¸é”™
         ;; (liberime-get-schema-list)
 
         (liberime-select-schema "wubi_pinyin")
