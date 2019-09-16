@@ -85,7 +85,7 @@
       (set-buffer-multibyte t))
     (set-buffer-modified-p nil))
 
-  (setq w3m-search-default-engine "baidu")
+  ;; (setq w3m-search-default-engine "google")
 
   (eval-after-load "w3m-search" '(progn
     (add-to-list 'w3m-search-engine-alist '("baidu"
