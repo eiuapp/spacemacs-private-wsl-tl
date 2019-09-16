@@ -29,6 +29,7 @@
         4clojure
         persp-mode
         tiny
+        expand-region
         ;; smartparens
         flyspell-correct
         peep-dired
@@ -42,8 +43,68 @@
         ranger
         golden-ratio
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
-        browse-at-remote
+        symbol-overlay
+        ;; browse-at-remote
+        chinese-conv
+        ;; chinese-wbim
+        pyim
+        lispyville
+        popup
         ))
+
+(defun zilongshanren-misc/post-init-popup ()
+  (use-package popup
+    :config
+    (progn
+      (define-key popup-menu-keymap (kbd "C-j") 'popup-next)
+      (define-key popup-menu-keymap (kbd "C-k") 'popup-previous)
+      )))
+
+(defun zilongshanren-misc/init-lispyville ()
+  (use-package lispyville
+    :init
+    (progn
+      (add-hook 'lispy-mode-hook #'lispyville-mode)
+      )
+    ))
+
+(defun zilongshanren-misc/post-init-chinese-conv ()
+  (setq chinese-conv-opencc-program "/usr/local/bin/opencc")
+  (setq chinese-conv-opencc-data "/usr/local/share/opencc/"))
+
+(defun zilongshanren-misc/post-init-expand-region ()
+  (with-eval-after-load 'expand-region
+    (when (configuration-layer/package-used-p 'helm-ag)
+      (defadvice er/prepare-for-more-expansions-internal
+          (around helm-ag/prepare-for-more-expansions-internal activate)
+        ad-do-it
+        (let ((new-msg (concat (car ad-return-value)
+                               ", H to highlight in buffers"
+                               ", / to search in project, "
+                               "f to search in files, "
+                               "b to search in opened buffers"))
+              (new-bindings (cdr ad-return-value)))
+          (cl-pushnew
+           '("H" (lambda ()
+                   (call-interactively
+                    'zilongshanren/highlight-dwim)))
+           new-bindings)
+          (cl-pushnew
+           '("/" (lambda ()
+                   (call-interactively
+                    'spacemacs/helm-project-smart-do-search-region-or-symbol)))
+           new-bindings)
+          (cl-pushnew
+           '("f" (lambda ()
+                   (call-interactively
+                    'spacemacs/helm-files-smart-do-search-region-or-symbol)))
+           new-bindings)
+          (cl-pushnew
+           '("b" (lambda ()
+                   (call-interactively
+                    'spacemacs/helm-buffers-smart-do-search-region-or-symbol)))
+           new-bindings)
+          (setq ad-return-value (cons new-msg new-bindings)))))))
 
 (defun zilongshanren-misc/init-browse-at-remote ()
   (use-package browse-at-remote
@@ -61,6 +122,14 @@
           ('hi-yellow . 0)
           ('hi-pink . 0)
           ('hi-blue-b . 0))))))
+
+(defun zilongshanren-misc/post-init-symbol-overlay ()
+  (with-eval-after-load 'symbol-overlay
+    (progn
+      (spacemacs/transient-state-register-add-bindings 'symbol-overlay
+      '((">" symbol-overlay-jump-last)
+        ("s" spacemacs/swiper-region-or-symbol)
+        ("<" symbol-overlay-jump-first))))))
 
 (defun zilongshanren-misc/post-init-golden-ratio ()
   (with-eval-after-load 'golden-ratio
@@ -513,7 +582,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 (defun zilongshanren-misc/post-init-flyspell-correct ()
   (progn
     (with-eval-after-load 'flyspell
-      (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-previous-word-generic))
+      (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-previous))
     (setq flyspell-correct-interface 'flyspell-correct-ivy)))
 
 (defun zilongshanren-misc/post-init-smartparens ()
@@ -541,6 +610,8 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 (defun zilongshanren-misc/post-init-helm ()
   (with-eval-after-load 'helm
     (progn
+      (setq helm-buffer-max-length 56)
+
       ;; limit max number of matches displayed for speed
       (setq helm-candidate-number-limit 100)
       ;; ignore boring files like .o and .a
@@ -685,7 +756,8 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
     ;; ;; change evil initial mode state
     (loop for (mode . state) in
-          '((shell-mode . normal))
+          '((shell-mode . normal)
+            (minibuffer-inactive-mode . emacs))
           do (evil-set-initial-state mode state))
 
     ;;mimic "nzz" behaviou in vim
@@ -715,6 +787,11 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     (define-key evil-normal-state-map (kbd "[ SPC") (lambda () (interactive) (evil-insert-newline-above) (forward-line)))
     (define-key evil-normal-state-map (kbd "] SPC") (lambda () (interactive) (evil-insert-newline-below) (forward-line -1)))
 
+    (define-key evil-normal-state-map (kbd "g[")
+      (lambda () (interactive) (beginning-of-defun)))
+
+    (define-key evil-normal-state-map (kbd "g]")
+      (lambda () (interactive) (end-of-defun)))
 
     (define-key evil-normal-state-map (kbd "[ b") 'previous-buffer)
     (define-key evil-normal-state-map (kbd "] b") 'next-buffer)
@@ -801,7 +878,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
       (bind-key* "C-s-l" 'mc/edit-lines)
       (bind-key* "C-s-f" 'mc/mark-all-dwim)
-      (bind-key* "C-s-." 'mc/mark-next-like-this)
+      (bind-key* "s-." 'mc/mark-next-like-this)
       (bind-key* "C-s-," 'mc/mark-previous-like-this)
       (bind-key* "s->" 'mc/unmark-next-like-this)
       (bind-key* "s-<" 'mc/unmark-previous-like-this)
@@ -868,24 +945,101 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     ))
 
 (defun zilongshanren-misc/post-init-persp-mode ()
-  (setq persp-kill-foreign-buffer-action 'kill)
+  (setq persp-kill-foreign-buffer-behaviour 'kill)
   (setq persp-lighter nil)
-  (when (fboundp 'spacemacs|define-custom-layout)
-    (spacemacs|define-custom-layout "@Cocos2D-X"
-      :binding "c"
-      :body
-      (find-file "~/cocos2d-x/cocos/ui/UIWidget.cpp")
-      (split-window-right)
-      (find-file "~/cocos2d-x/cocos/cocos2d.cpp"))))
 
+  (defun zilongshanren-kill-other-persp-buffers (&optional arg)
+    "Kill all other buffers in current persp layout"
+    (interactive)
+    (when (yes-or-no-p (format "Killing all buffers except \"%s\"? "
+                               (buffer-name)))
+      (mapc 'persp-kill-buffer (delq (current-buffer) (persp-buffer-list)))
+      (persp-add-buffer (current-buffer))
+      (message "Buffers deleted!")))
+
+  (when (fboundp 'spacemacs|define-custom-layout)
+    (spacemacs|define-custom-layout "@work"
+      :binding "w"
+      :body
+      (find-file "~/Github/HlMJ_js/assets/scripts/Login/LoginScene.js"))))
+
+(defun zilongshanren-misc/post-init-pyim ()
+  (progn
+    ;; use librime as wubi input
+    ;; 参考这个设置 pyim 使用 liberime 库 https://emacs-china.org/t/mac-emacs-rime/ 需要emacs 26的dynamic module功能 
+    ;; 设置极点五笔可以参考https://github.com/zilongshanren/rime-wubi86-jidian  
+    (eval-and-compile
+      (if (fboundp 'window-inside-edges)
+          ;; Emacs devel.
+          (defalias 'th-window-edges
+            'window-inside-edges)
+        ;; Emacs 21
+        (defalias 'th-window-edges
+          'window-edges)
+        ))
+
+    (defun th-point-position ()
+      "Return the location of POINT as positioned on the selected frame.
+  Return a cons cell (X . Y)"
+      (let* ((w (selected-window))
+             (f (selected-frame))
+             (edges (th-window-edges w))
+             (col (current-column))
+             (row (count-lines (window-start w) (point)))
+             (x (+ (car edges) col))
+             (y (+ (car (cdr edges)) row)))
+        (cons x y)))
+
+
+    (defun display-current-input-method-title (arg1 &optional arg2 arg3)
+      "display current input method name"
+      (when current-input-method-title
+        (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
+        (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
+
+    (advice-add 'evil-insert :after 'display-current-input-method-title)
+
+    (when (functionp 'module-load)
+      (progn
+        (setq load-path (cons (file-truename "~/.spacemacs.d/") load-path))
+        (require 'liberime)
+        (require 'posframe)
+
+        (setq default-input-method "pyim")
+        (setq pyim-page-tooltip 'posframe)
+        (setq pyim-page-length 9)
+
+        (setq-default pyim-english-input-switch-functions
+                      '(pyim-probe-program-mode
+                        ;; pyim-probe-auto-english
+                        pyim-probe-org-structure-template))
+
+
+        ;; 不用频率切换输入法了。这个东西太好使了
+        (bind-key* "s-j" 'pyim-convert-code-at-point)
+
+        (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/Library/Rime"))
+        ;; 使用这个来查看当前输入法有哪些，不错
+        ;; (liberime-get-schema-list)
+
+        (liberime-select-schema "wubi_pinyin")
+        (setq pyim-default-scheme 'rime)))))
+
+;; deprecated
 (defun zilongshanren-misc/post-init-chinese-wbim ()
   (progn
-    (bind-key* ";" 'chinese-wbim-insert-ascii)
-    (setq chinese-wbim-punc-translate-p nil)
+    
+    ;; (bind-key* ";" 'chinese-wbim-insert-ascii)
+    ;; (setq chinese-wbim-punc-translate-p nil)
+
+    (setq chinese-wbim-tooltip-timeout 5)
     (spacemacs/declare-prefix "ot" "Toggle")
     (spacemacs/set-leader-keys
       "otp" 'chinese-wbim-punc-translate-toggle)
     (setq chinese-wbim-wb-use-gbk t)
+
+    (setq chinese-wbim-use-tooltip t)
+    
     (add-hook 'chinese-wbim-wb-load-hook
               (lambda ()
                 (let ((map (chinese-wbim-mode-map)))
@@ -961,103 +1115,31 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       :env '(("LANG" "en_US.UTF-8")
              ("LC_ALL" "en_US.UTF-8")))
     ;; define service
-    (prodigy-define-service
-      :name "Preview cocos2d-x web"
-      :command "python"
-      :args '("-m" "SimpleHTTPServer" "6001")
-      :cwd "~/cocos2d-x/web"
-      :tags '(work)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Preview creator engine"
-      :command "python"
-      :args '("-m" "SimpleHTTPServer" "6004")
-      :cwd "~/Github/fireball/engine"
-      :tags '(work)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Hugo Server jane"
-      :command "/usr/local/bin/hugo"
-      :args '("server" "-D" "--navigateToChanged" "-t" "jane")
-      :cwd "~/bitbucket/qqbb/tomtsang-rootsongjc-hugo"
-      :tags '(hugo server)
-      :stop-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Hugo Server redlounge"
-      :command "/usr/local/bin/hugo"
-      :args '("server" "-D" "--navigateToChanged" "-t" "hugo-redlounge")
-      :cwd "~/bitbucket/qqbb/tomtsang-rootsongjc-hugo"
-      :tags '(hugo server)
-      :stop-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Hugo Server beautifulhugo"
-      :command "/usr/local/bin/hugo"
-      :args '("server" "-D" "--navigateToChanged" "-t" "beautifulhugo")
-      :cwd "~/bitbucket/qqbb/tomtsang-rootsongjc-hugo"
-      :tags '(hugo server)
-      :stop-signal 'sigkill
-      :init (lambda () (browse-url "http://localhost:1313"))
-      :kill-process-buffer-on-stop t)
+    
 
     (prodigy-define-service
       :name "Hugo Server"
       :command "hugo"
-      :args '("server")
-      :cwd "~/bitbucket/qqbb/tomtsang-rootsongjc-hugo"
+      :args '("server" "-D" "--navigateToChanged" "-t" "even")
+      :cwd blog-admin-dir
       :tags '(hugo server)
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
-      :name "Hexo Server"
-      :command "hexo"
-      :args '("server")
+      :name "hugo Deploy"
+      :command "bash"
+      :args '("./deploy.sh" )
       :cwd blog-admin-dir
-      :tags '(hexo server)
+      :tags '(hugo deploy)
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
-    (prodigy-define-service
-      :name "Hexo Deploy"
-      :command "hexo"
-      :args '("deploy" "--generate")
-      :cwd blog-admin-dir
-      :tags '(hexo deploy)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Debug Fireball"
-      :command "npm"
-      :args '("start" "--" "--nologin" "/Users/guanghui/Github/example-cases")
-      :cwd "~/Github/fireball/"
-      :tags '(work)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Org wiki preview"
-      :command "python"
-      :args '("-m" "SimpleHTTPServer" "8088")
-      :cwd "~/org-notes/public_html"
-      :tags '(org-mode)
-      :init (lambda () (browse-url "http://localhost:8088"))
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (defun refresh-chrome-current-tab (beg end length-before)
-      (call-interactively 'zilongshanren/browser-refresh--chrome-applescript))
-    ;; add watch for prodigy-view-mode buffer change event
-    (add-hook 'prodigy-view-mode-hook
-              #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))
+    ;; (defun refresh-chrome-current-tab (beg end length-before)
+    ;;   (call-interactively 'zilongshanren/browser-refresh--chrome-applescript))
+    ;; ;; add watch for prodigy-view-mode buffer change event
+    ;; (add-hook 'prodigy-view-mode-hook
+    ;;           #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))
 
     ))
 
@@ -1120,12 +1202,41 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       (progn
         (spacemacs|hide-lighter ivy-mode)
 
+        (setq ivy-dynamic-exhibit-delay-ms 300)
+
+        (defun ivy-call-and-recenter ()
+          "Call action and recenter window according to the selected candidate."
+          (interactive)
+          (ivy-call)
+          (with-ivy-window
+            (evil-scroll-line-to-center (line-number-at-pos))))
+
+        ;; .projectile file will specify the search root
+        ;; add / to search when use expand region
+        ;; (when (configuration-layer/package-used-p 'counsel)
+        ;;   (defadvice er/prepare-for-more-expansions-internal
+        ;;       (around ivy-rg/prepare-for-more-expansions-internal activate)
+        ;;     ad-do-it
+        ;;     (let ((new-msg (concat (car ad-return-value)
+        ;;                            ", / to search in project, "))
+        ;;           (new-bindings (cdr ad-return-value)))
+        ;;       (cl-pushnew
+        ;;        '("/" (lambda ()
+        ;;                (call-interactively
+        ;;                 'spacemacs/search-project-auto-region-or-symbol)))
+        ;;        new-bindings)
+        ;;       (setq ad-return-value (cons new-msg new-bindings)))))
+
+
         (ivy-set-actions
          t
          '(("f" my-find-file-in-git-repo "find files")
            ("!" my-open-file-in-external-app "Open file in external app")
            ("I" ivy-insert-action "insert")
            ("C" ivy-kill-new-action "copy")
+           ("d" ivy--kill-buffer-action )
+           ("k" ivy--kill-buffer-action "kill")
+           ("r" ivy--rename-buffer-action "rename")
            ("S" ivy-ff-checksum-action "Checksum")))
 
         (spacemacs/set-leader-keys "fad" 'counsel-goto-recent-directory)
@@ -1134,18 +1245,16 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (setq ivy-initial-inputs-alist nil)
         (setq ivy-wrap t)
         (setq confirm-nonexistent-file-or-buffer t)
+        (define-key ivy-switch-buffer-map (kbd "C-k") 'ivy-previous-line)
+        (define-key ivy-switch-buffer-map (kbd "C-d") 'ivy-switch-buffer-kill)
 
-        ;; (when (not (configuration-layer/layer-usedp 'helm))
-        ;;   (spacemacs/set-leader-keys "sp" 'counsel-git-grep)
-        ;;   (spacemacs/set-leader-keys "sP" 'spacemacs/counsel-git-grep-region-or-symbol))
         (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
-        ;; (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-call)
-        ;; (define-key ivy-minibuffer-map (kbd "C-s-m") 'ivy-partial-or-done)
         (define-key ivy-minibuffer-map (kbd "C-c s") 'ivy-ff-checksum)
         (define-key ivy-minibuffer-map (kbd "s-o") 'ivy-dispatching-done-hydra)
         (define-key ivy-minibuffer-map (kbd "C-c C-e") 'spacemacs//counsel-edit)
+        (define-key ivy-minibuffer-map (kbd "C-l") 'ivy-call-and-recenter)
         (define-key ivy-minibuffer-map (kbd "<f3>") 'ivy-occur)
-        (define-key ivy-minibuffer-map (kbd "C-c j") 'ivy-immediate-done)
+        (define-key ivy-minibuffer-map (kbd "C-c d") 'ivy-immediate-done)
         (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
         (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
 
@@ -1159,14 +1268,22 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
         (add-to-list 'magit-no-confirm 'stage-all-changes)
         (define-key magit-log-mode-map (kbd "W") 'magit-copy-section-value)
-        (define-key magit-status-mode-map (kbd "s-1") 'magit-jump-to-unstaged)
-        (define-key magit-status-mode-map (kbd "s-2") 'magit-jump-to-untracked)
-        (define-key magit-status-mode-map (kbd "s-3") 'magit-jump-to-staged)
-        (define-key magit-status-mode-map (kbd "s-4") 'magit-jump-to-stashes)
         (setq magit-completing-read-function 'magit-builtin-completing-read)
 
         (magit-define-popup-switch 'magit-push-popup ?u
-          "Set upstream" "--set-upstream")
+                                   "Set upstream" "--set-upstream")
+
+
+        (magit-add-section-hook 'magit-status-sections-hook
+                                'magit-insert-assume-unchanged-files nil t)
+
+        ;; insert the hidden files section in the magit status buffer.
+        (magit-add-section-hook 'magit-status-sections-hook
+                                'magit-insert-skip-worktree-files nil t)
+
+        (define-key magit-status-mode-map "ga" 'magit-jump-to-assume-unchanged)
+        
+        (define-key magit-status-mode-map "gw" 'magit-jump-to-skip-worktree)
         ))
 
     ;; prefer two way ediff

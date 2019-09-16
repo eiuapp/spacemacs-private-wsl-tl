@@ -21,6 +21,7 @@
     ;; spaceline
     ;; beacon
     ;; evil-vimish-fold
+    ;; company-box
     )
   )
 
@@ -75,10 +76,11 @@
   (setq-default mode-line-format
                 (list
                  " %1"
-                 '(:eval (when (bound-and-true-p winum-mode) (propertize
-                                                              (window-number-mode-line)
-                                                              'face
-                                                              'font-lock-type-face)))
+                 '(:eval (zilongshanren/modeline-winum-mode))
+                 ;; '(:eval (when (bound-and-true-p winum-mode) (propertize
+                 ;;                                              (window-number-mode-line)
+                 ;;                                              'face
+                 ;;                                              'font-lock-type-face)))
                  " "
                  '(:eval (zilong/modeline--evil-substitute))
                  '(:eval (zilongshanren/update-persp-name))
@@ -228,6 +230,19 @@ This segment overrides the modeline functionality of `org-mode-line-string'."
 
       (setq-default mode-line-format '("%e" (:eval (spaceline-ml-zilong))))
       )))
+
+(defun zilongshanren-ui/init-company-box ()
+  (use-package company-box
+    :diminish
+    :config
+    (progn
+      ;; 使用company-box来写org的话，补全选项会更好看一些
+      (add-hook 'org-mode-hook 'company-box-mode)
+      (setq company-box-enable-icon nil)
+      (setq company-box-backends-colors nil)
+      (setq company-box-show-single-candidate t)
+      (setq company-box-max-candidates 50))))
+
 
 (defun zilongshanren-ui/init-beacon ()
   (use-package beacon

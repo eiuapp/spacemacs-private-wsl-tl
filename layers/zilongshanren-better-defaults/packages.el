@@ -48,6 +48,7 @@
     (progn
       (require 'dired-x)
       (require 'dired-aux)
+      (add-hook 'dired-mode-hook 'dired-async-mode)
       (setq dired-listing-switches "-alh")
       (setq dired-guess-shell-alist-user
             '(("\\.pdf\\'" "open")
@@ -107,6 +108,7 @@
         "`" 'dired-open-term
         "p" 'peep-dired-prev-file
         "n" 'peep-dired-next-file
+        "gr" 'revert-buffer
         "z" 'dired-get-size
         "c" 'dired-copy-file-here
         "J" 'counsel-find-file
